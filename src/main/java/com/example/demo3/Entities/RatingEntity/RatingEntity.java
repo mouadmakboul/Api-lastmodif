@@ -15,6 +15,7 @@ public class RatingEntity {
     @Column(name = "Rating_id", nullable = false)
     private long id;
     private String rating;
+    private int ratingvalue;
     @OneToOne
     private LogementEntity logement; //jatni hana 3la reservation
     @ManyToOne(fetch = FetchType.LAZY)

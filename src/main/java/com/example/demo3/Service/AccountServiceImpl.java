@@ -2,6 +2,7 @@ package com.example.demo3.Service;
 
 import com.example.demo3.Entities.AccountEntity.AccountEntity;
 import com.example.demo3.Entities.UserEntity.UserEntity;
+import com.example.demo3.Exceptions.AccountException;
 import com.example.demo3.Repositories.AccountRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,13 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountEntity findByUser(UserEntity user) {
-        return accountRepo.findByUser(user);
+        AccountEntity account = accountRepo.findByUser(user);
+        if (account == null) {
+            throw new AccountException("Le compte de l'utilisateur spécifié n'a pas été trouvé.");
+        }
+        return account;
     }
+
 
     @Override
     public List<AccountEntity> findAllByStatut(String statut) {

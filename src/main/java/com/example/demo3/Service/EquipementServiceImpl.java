@@ -1,6 +1,7 @@
 package com.example.demo3.Service;
 
 import com.example.demo3.Entities.EquipementEntity.EquipementEntity;
+import com.example.demo3.Exceptions.EquipementException;
 import com.example.demo3.Repositories.EquipementRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,11 @@ public class EquipementServiceImpl implements EquipementService {
 
     @Override
     public EquipementEntity findByNameEquipement(String nameEquipement) {
-        return equipementRepo.findByNameEquipement(nameEquipement);
+        EquipementEntity equipement = equipementRepo.findByNameEquipement(nameEquipement);
+        if (equipement == null) {
+            throw new EquipementException("L'équipement spécifié n'a pas été trouvé.");
+        }
+        return equipement;
     }
 
     @Override

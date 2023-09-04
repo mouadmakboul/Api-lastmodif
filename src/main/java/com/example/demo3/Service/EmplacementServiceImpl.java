@@ -2,6 +2,7 @@ package com.example.demo3.Service;
 
 import com.example.demo3.Entities.EmplacementEntity.EmplacementEntity;
 import com.example.demo3.Entities.LogementEntity.LogementEntity;
+import com.example.demo3.Exceptions.EmplacementException;
 import com.example.demo3.Repositories.EmplacementRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,12 +20,18 @@ public class EmplacementServiceImpl implements EmplacementService {
 
     @Override
     public EmplacementEntity findByZonegeo(String zonegeo) {
-        return emplacementRepo.findByZonegeo(zonegeo);
+        EmplacementEntity emplacement = emplacementRepo.findByZonegeo(zonegeo);
+        if (emplacement == null) {
+            throw new EmplacementException("L'emplacement spécifié n'a pas été trouvé.");
+        }
+        return emplacement;
     }
+
 
     @Override
     public List<LogementEntity> findLogementsByZonegeo(String zonegeo) {
         return emplacementRepo.findLogementsByZonegeo(zonegeo);
+
     }
 
     @Override

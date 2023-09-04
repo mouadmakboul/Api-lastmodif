@@ -1,28 +1,29 @@
 package com.example.demo3.Entities.ReservationEntity;
-import com.example.demo3.Entities.CommentaireEntity.CommentaireEntity;
-import jakarta.validation.constraints.NotEmpty;
+
+import com.example.demo3.Entities.LogementEntity.LogementDto;
+import com.example.demo3.Entities.PayementEntity.PayementDto;
+import com.example.demo3.Entities.UserEntity.UserDto;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.Date;
-import java.util.List;
+
 @Data
 
 
 @Getter
 @Setter
 @NoArgsConstructor
+
 public class ReservationDto {
-
-
-    @NotNull
-    @NotEmpty
+    private long id;
     private Date Datereservation;
-
-    private String firstName;
-     private List<CommentaireEntity> commentaires;
-
+    private Date startDate;
+    private Date endDate;
+    private LogementDto logement; // Utilisez un DTO pour le logement associé
+    private UserDto user; // Utilisez un DTO pour l'utilisateur associé
+    private PayementDto payement; // Utilisez un DTO pour le paiement associé, si nécessaire
+    // Autres propriétés et DTO associés, le cas échéant
 }

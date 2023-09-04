@@ -1,9 +1,6 @@
 package com.example.demo3.Entities.UserEntity;
 
-import com.example.demo3.Entities.AccountEntity.AccountEntity;
-import com.example.demo3.Entities.CommentaireEntity.CommentaireEntity;
-import com.example.demo3.Entities.PayementEntity.PayementEntity;
-import com.example.demo3.Entities.ReservationEntity.ReservationEntity;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,14 +12,13 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+
 public class UserDto {
-
+    private Long id;
     private String username;
-
-    private String firstName;
-
-    private List<CommentaireEntity> commentaires;
-    private List<PayementEntity> payements;
-    private List<ReservationEntity> resevations;
+    private String firstname;
+    private String lastname;
+    private String email;
+    private String numero;
 
 }

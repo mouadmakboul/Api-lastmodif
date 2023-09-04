@@ -2,6 +2,7 @@ package com.example.demo3.Service;
 
 import com.example.demo3.Entities.PayementEntity.PayementEntity;
 import com.example.demo3.Entities.UserEntity.UserEntity;
+import com.example.demo3.Exceptions.PaymentException;
 import com.example.demo3.Repositories.PayementRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,9 +34,13 @@ public class PayementServiceImpl implements PayementService {
     }
 
     @Override
-    public PayementEntity save(PayementEntity payement) {
-        return payementRepo.save(payement);
+    public PayementEntity save(PayementEntity payment) {
+        if (payment.getAmount() <= 0) {
+            throw new PaymentException("Le montant du paiement doit être supérieur à zéro.");
+        }
+        return payementRepo.save(payment);
     }
+
 
     @Override
     public void deleteById(Long id) {

@@ -2,6 +2,7 @@ package com.example.demo3.Service;
 
 import com.example.demo3.Entities.LogementEntity.LogementEntity;
 import com.example.demo3.Entities.UserEntity.UserEntity;
+import com.example.demo3.Exceptions.LogementException;
 import com.example.demo3.Repositories.LogementRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,6 +52,10 @@ public class LogementServiceImpl implements LogementService {
 
     @Override
     public LogementEntity save(LogementEntity logement) {
+        if (logement.getStartdate().after(logement.getEnddate())) {
+            throw new LogementException("La date de début ne peut pas être après la date de fin.");
+        }
         return logementRepo.save(logement);
     }
+
 }

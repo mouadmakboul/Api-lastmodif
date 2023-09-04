@@ -4,6 +4,7 @@ import com.example.demo3.Entities.LogementEntity.LogementEntity;
 import com.example.demo3.Entities.ReservationEntity.ReservationEntity;
 import com.example.demo3.Entities.UserEntity.UserEntity;
 
+import com.example.demo3.Exceptions.UserException;
 import com.example.demo3.Repositories.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,17 +53,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity findById(Long userId) {
-        // Utilisez votre UserRepository ou une autre méthode de récupération des utilisateurs par ID
-        // Assurez-vous que votre couche de persistance est correctement configurée
         Optional<UserEntity> userOptional = userRepository.findById(userId);
 
-        // Vérifiez si l'utilisateur a été trouvé, puis retournez-le ou traitez l'absence selon vos besoins
         if (userOptional.isPresent()) {
             return userOptional.get();
         } else {
-            // Gérez le cas où l'utilisateur n'a pas été trouvé, par exemple, en lançant une exception ou en renvoyant null
-            return null;
+            throw new UserException("Utilisateur introuvable pour l'ID : " + userId);
         }
     }
+
 
 }

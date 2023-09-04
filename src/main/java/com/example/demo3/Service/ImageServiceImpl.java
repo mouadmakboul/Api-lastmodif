@@ -4,6 +4,7 @@ import com.example.demo3.Entities.ImageEntity.ImageEntity;
 
 import com.example.demo3.Entities.LogementEntity.LogementEntity;
 import com.example.demo3.Entities.UserEntity.UserEntity;
+import com.example.demo3.Exceptions.ImageException;
 import com.example.demo3.Repositories.ImageRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,7 +62,7 @@ public class ImageServiceImpl implements ImageService {
     public ImageEntity uploadImage(MultipartFile file, UserEntity user) {
         // Assurez-vous que le fichier n'est pas vide
         if (file.isEmpty()) {
-            throw new RuntimeException("Le fichier est vide.");
+            throw new ImageException("Le fichier est vide.");
         }
 
         // Obtenez le nom original du fichier
@@ -75,6 +76,6 @@ public class ImageServiceImpl implements ImageService {
         // Enregistrez l'image dans la base de données
         image = imageRepo.save(image);
 
-
         return image;
     }}
+

@@ -14,6 +14,7 @@ public class PayementEntity {
     @Column(name = "payement_id", nullable = false)
     private long id;
     private String methodepayement;
+    private long Amount;
     @OneToOne
     private UserEntity user;
     @OneToOne

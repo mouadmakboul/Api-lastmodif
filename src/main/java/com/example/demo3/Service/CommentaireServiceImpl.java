@@ -3,6 +3,7 @@ package com.example.demo3.Service;
 import com.example.demo3.Entities.CommentaireEntity.CommentaireEntity;
 import com.example.demo3.Entities.ReservationEntity.ReservationEntity;
 import com.example.demo3.Entities.UserEntity.UserEntity;
+import com.example.demo3.Exceptions.CommentaireException;
 import com.example.demo3.Repositories.CommentaireRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,9 +43,12 @@ public class CommentaireServiceImpl implements CommentaireService {
 
     @Override
     public CommentaireEntity save(CommentaireEntity com) {
-
+        if (com.getText() == null || com.getText().isEmpty()) {
+            throw new CommentaireException("Le texte du commentaire ne peut pas être vide.");
+        }
         return commentaireRepo.save(com);
     }
+
 
     @Override
     public Optional<CommentaireEntity> findById(long id) {

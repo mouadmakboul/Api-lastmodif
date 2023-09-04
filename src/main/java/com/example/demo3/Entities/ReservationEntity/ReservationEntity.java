@@ -6,12 +6,16 @@ import com.example.demo3.Entities.PayementEntity.PayementEntity;
 import com.example.demo3.Entities.UserEntity.UserEntity;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
 
 @Data
 @Entity
+@Getter
+@Setter
 @Table(name = "reservations")
 public class ReservationEntity {
     @Id
@@ -36,4 +40,20 @@ public class ReservationEntity {
     @ManyToOne // Correction : Relation ManyToOne avec UserEntity
     @JoinColumn(name = "user_id") // Correction : spécification de la colonne de jointure
     private UserEntity user;
+
+    public long getId() {
+        return id;
+    }
+
+    public Date getDatereservation() {
+        return Datereservation;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public Date getEndtDate() {
+        return endtDate;
+    }
 }

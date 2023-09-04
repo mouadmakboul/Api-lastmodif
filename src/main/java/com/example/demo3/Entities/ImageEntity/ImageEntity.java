@@ -23,6 +23,4 @@ public class ImageEntity {
     @JoinColumn(name ="user_id", nullable = true)
     private UserEntity user;
 
-
-
 }
