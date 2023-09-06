@@ -2,6 +2,7 @@ package com.example.demo3.controllers;
 
 import com.example.demo3.Entities.PayementEntity.PayementEntity;
 import com.example.demo3.Entities.UserEntity.UserEntity;
+import com.example.demo3.Exceptions.LogementException;
 import com.example.demo3.Exceptions.PaymentException;
 import com.example.demo3.Service.PayementService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,7 @@ public class PayementController {
             PayementEntity savedPayement = payementService.save(payement);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedPayement);
         } catch (PaymentException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+            throw new PaymentException("Aucun logement n'a été trouvée pour ce logement.");
         }
     }
 

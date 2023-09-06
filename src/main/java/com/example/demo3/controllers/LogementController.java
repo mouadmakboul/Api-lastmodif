@@ -2,6 +2,7 @@ package com.example.demo3.controllers;
 
 import com.example.demo3.Entities.LogementEntity.LogementEntity;
 import com.example.demo3.Entities.UserEntity.UserEntity;
+import com.example.demo3.Exceptions.CategoryException;
 import com.example.demo3.Exceptions.LogementException;
 import com.example.demo3.Service.LogementService;
 import com.example.demo3.Service.LogementServiceImpl;
@@ -75,7 +76,7 @@ public class LogementController {
             LogementEntity createdLogement = logementService.save(logement);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdLogement);
         } catch (LogementException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+            throw new LogementException("Aucun logement n'a été trouvée pour ce logement.");
         }
     }
 

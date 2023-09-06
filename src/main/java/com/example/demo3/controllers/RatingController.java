@@ -3,6 +3,7 @@ package com.example.demo3.controllers;
 import com.example.demo3.Entities.LogementEntity.LogementEntity;
 import com.example.demo3.Entities.RatingEntity.RatingEntity;
 import com.example.demo3.Entities.UserEntity.UserEntity;
+import com.example.demo3.Exceptions.PaymentException;
 import com.example.demo3.Exceptions.RatingException;
 import com.example.demo3.Service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,16 +55,14 @@ public class RatingController {
     }
     @GetMapping("/{id}")
     public ResponseEntity<?> getRatingById(@PathVariable Long id) {
-        try {
+
             Optional<RatingEntity> rating = ratingService.findById(id);
             if (rating.isPresent()) {
                 return ResponseEntity.ok(rating.get());
             } else {
                 throw new RatingException("Évaluation non trouvée avec l'ID : " + id);
             }
-        } catch (RatingException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }
-    }
 
-}
+    }}
+
+

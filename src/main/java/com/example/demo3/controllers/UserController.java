@@ -62,7 +62,7 @@ public class UserController {
             UserEntity savedUser = userService.saveUser(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
         } catch (UserException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+            throw new UserException("une erreur s est produite lors de la création");
         }
     }
 
