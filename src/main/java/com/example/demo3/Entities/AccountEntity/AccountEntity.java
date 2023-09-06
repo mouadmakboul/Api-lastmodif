@@ -2,7 +2,10 @@ package com.example.demo3.Entities.AccountEntity;
 
 import com.example.demo3.Entities.UserEntity.UserEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+
+
 
 @Entity
 @Data

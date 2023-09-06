@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -21,7 +22,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<ReservationEntity> findAllByLogement(LogementEntity logement) {
+    public List<ReservationEntity> findAllByLogement(Optional<LogementEntity> logement) {
         return reservationRepo.findAllByLogement(logement);
     }
 
@@ -51,5 +52,18 @@ public class ReservationServiceImpl implements ReservationService {
     public List<ReservationEntity> findAllByStartDateBetween(Date startDate, Date endDate) {
         return reservationRepo.findAllByStartDateBetween(startDate, endDate);
     }
+    @Override
+    public boolean isReservationValid(ReservationEntity reservation) {
+        if (reservation.getDatereservation() == null || reservation.getDatereservation().before(new Date())) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public Optional<Object> findById(long reservationId) {
+        return Optional.of(reservationRepo.findById(reservationId));
+    }
+
 
 }

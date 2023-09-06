@@ -18,4 +18,6 @@ public interface UserService {
     List<ReservationEntity> getReservationsByUser(UserEntity user);
 
     UserEntity findById(Long userId);
+
+    UserEntity saveUser(UserEntity user);
 }

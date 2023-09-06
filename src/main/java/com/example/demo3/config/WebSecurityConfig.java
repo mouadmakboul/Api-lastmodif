@@ -63,7 +63,17 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers("/api/test/**").permitAll()
-                                .requestMatchers("/categories/**").permitAll() //hadi zadta
+                                .requestMatchers("/images/**").permitAll()
+                                .requestMatchers("/reservations/**").permitAll()
+                                .requestMatchers("/categories/**").permitAll()
+                                .requestMatchers("/logements/**").permitAll()
+                                .requestMatchers("/accounts/**").permitAll()
+                                .requestMatchers("/commentaires/**").permitAll()
+                                .requestMatchers("/emplacements/**").permitAll()
+                                .requestMatchers("/equipements/**").permitAll()
+                                .requestMatchers("/payements/**").permitAll()//hadi zadta
+                                .requestMatchers("/ratings/**").permitAll()
+                                .requestMatchers("/api/users/**").permitAll()
                                 .anyRequest().authenticated()
                 );
 

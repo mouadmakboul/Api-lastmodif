@@ -2,9 +2,13 @@ package com.example.demo3.controllers;
 
 import com.example.demo3.Entities.LogementEntity.LogementEntity;
 import com.example.demo3.Entities.UserEntity.UserEntity;
+import com.example.demo3.Exceptions.LogementException;
 import com.example.demo3.Service.LogementService;
 import com.example.demo3.Service.LogementServiceImpl;
+import com.example.demo3.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -16,6 +20,8 @@ import java.util.Optional;
 public class LogementController {
 
     private final LogementService logementService;
+    @Autowired
+    UserService ur;
 
     @Autowired
     public LogementController(LogementService logementService) {
@@ -23,19 +29,38 @@ public class LogementController {
     }
 
     @GetMapping("/byTitle")
-    public LogementEntity getLogementByTitle(@RequestParam String title) {
-        return logementService.findByTitle(title);
+    public ResponseEntity<?> getLogementByTitle(@RequestParam String title) {
+        try {
+            LogementEntity logement = logementService.findByTitle(title);
+            return ResponseEntity.ok(logement);
+        } catch (LogementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
     }
 
     @GetMapping("/byId")
-    public Optional<LogementEntity> getLogementById(@RequestParam Long id) {
-        return logementService.findById(id);
+    public ResponseEntity<?> getLogementById(@RequestParam Long id) {
+        try {
+            Optional<LogementEntity> logement = logementService.findById(id);
+            if (logement.isPresent()) {
+                return ResponseEntity.ok(logement.get());
+            } else {
+                throw new LogementException("Logement not found with ID: " + id);
+            }
+        } catch (LogementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
     }
 
     @GetMapping("/byUser")
-    public List<LogementEntity> getLogementsByUser(@RequestParam long userId) {
-        UserEntity user = new UserEntity(); // Vous devrez obtenir l'utilisateur à partir de votre service d'utilisateur
-        return logementService.findAllByUser(user);
+    public ResponseEntity<?> getLogementsByUser(@RequestParam long userId) {
+        UserEntity user = ur.findById(userId); // Vous devrez obtenir l'utilisateur à partir de votre service d'utilisateur
+        try {
+            List<LogementEntity> logements = logementService.findAllByUser(user);
+            return ResponseEntity.ok(logements);
+        } catch (LogementException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
     }
 
     @GetMapping("/availableBetweenDates")
@@ -45,8 +70,13 @@ public class LogementController {
         return logementService.findAllAvailableBetweenDates(startDate, endDate);
     }
     @PostMapping
-    public LogementEntity createLogement(@RequestBody LogementEntity logement) {
-        return logementService.save(logement);
+    public ResponseEntity<?> createLogement(@RequestBody LogementEntity logement) {
+        try {
+            LogementEntity createdLogement = logementService.save(logement);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdLogement);
+        } catch (LogementException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
     }
 
     @PutMapping("/{id}")

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RatingServiceImpl implements RatingService {
@@ -40,6 +41,11 @@ public class RatingServiceImpl implements RatingService {
             throw new RatingException("La valeur du rating doit être comprise entre 1 et 5.");
         }
         return ratingRepo.save(rating);
+    }
+
+    @Override
+    public Optional<RatingEntity> findById(Long id) {
+        return ratingRepo.findById(id);
     }
 
 }

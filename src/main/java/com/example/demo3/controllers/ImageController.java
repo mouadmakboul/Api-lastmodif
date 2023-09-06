@@ -3,6 +3,7 @@ package com.example.demo3.controllers;
 import com.example.demo3.Entities.ImageEntity.ImageEntity;
 import com.example.demo3.Entities.LogementEntity.LogementEntity;
 import com.example.demo3.Entities.UserEntity.UserEntity;
+import com.example.demo3.Exceptions.ImageException;
 import com.example.demo3.Service.ImageService;
 import com.example.demo3.Service.ImageServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +28,33 @@ public class ImageController {
     }
 
     @GetMapping("/byName")
-    public Optional<ImageEntity> getImageByName(@RequestParam String name) {
-        return imageService.findByName(name);
+    public ResponseEntity<?> getImageByName(@RequestParam String name) {
+        try {
+            Optional<ImageEntity> image = imageService.findByName(name);
+            if (image.isPresent()) {
+                return ResponseEntity.ok(image.get());
+            } else {
+                throw new ImageException("Image not found with name: " + name);
+            }
+        } catch (ImageException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
     }
 
+
+
     @GetMapping("/byUserId")
-    public Optional<ImageEntity> getImageByUserId(@RequestParam long userId) {
-        return imageService.findByUserId(userId);
+    public ResponseEntity<?> getImageByUserId(@RequestParam long userId) {
+        try {
+            Optional<ImageEntity> image = imageService.findByUserId(userId);
+            if (image.isPresent()) {
+                return ResponseEntity.ok(image.get());
+            } else {
+                throw new ImageException("Image not found for user with ID: " + userId);
+            }
+        } catch (ImageException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
     }
 
     @GetMapping("/byLogement")
@@ -68,10 +89,15 @@ public class ImageController {
         imageService.deleteById(id);
     }
     @PostMapping("/upload")
-    public ResponseEntity<ImageEntity> uploadImage(
+    public ResponseEntity<?> uploadImage(
             @RequestParam("file") MultipartFile file,
             @RequestParam("userId") long userId) {
         UserEntity user = new UserEntity(); // Vous devrez obtenir l'utilisateur à partir de votre service d'utilisateur
-        ImageEntity uploadedImage = imageService.uploadImage(file, user);
-        return new ResponseEntity<>(uploadedImage, HttpStatus.CREATED);
+
+        try {
+            ImageEntity uploadedImage = imageService.uploadImage(file, user);
+            return new ResponseEntity<>(uploadedImage, HttpStatus.CREATED);
+        } catch (ImageException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
     }}

@@ -8,10 +8,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReservationRepo extends JpaRepository<ReservationEntity, Long> {
-    List<ReservationEntity> findAllByLogement(LogementEntity logement);
+    List<ReservationEntity> findAllByLogement(Optional<LogementEntity> logement);
     List<ReservationEntity> findAllByUserAndLogement(UserEntity user, LogementEntity logement);
 
     // Ajouter une méthode save personnalisée
