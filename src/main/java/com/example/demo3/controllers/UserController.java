@@ -1,7 +1,9 @@
 package com.example.demo3.controllers;
 
+import com.example.demo3.Converter.UserConverter;
 import com.example.demo3.Entities.LogementEntity.LogementEntity;
 import com.example.demo3.Entities.ReservationEntity.ReservationEntity;
+import com.example.demo3.Entities.UserEntity.UserDto;
 import com.example.demo3.Entities.UserEntity.UserEntity;
 import com.example.demo3.Exceptions.UserException;
 import com.example.demo3.Service.UserService;
@@ -18,10 +20,12 @@ import java.util.Optional;
 public class UserController {
 
     private final UserService userService;
+    private final UserConverter userConverter; // Injectez UserConverter
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserConverter userConverter) {
         this.userService = userService;
+        this.userConverter = userConverter;
     }
 
 
@@ -31,7 +35,9 @@ public class UserController {
         try {
             Optional<UserEntity> user = userService.findByUsername(username);
             if (user.isPresent()) {
-                return ResponseEntity.ok(user.get());
+                // Utilisez UserConverter pour convertir l'entité en DTO
+                UserDto userDto = userConverter.entityToDTO(user.get());
+                return ResponseEntity.ok(userDto);
             } else {
                 throw new UserException("Utilisateur non trouvé avec le nom d'utilisateur : " + username);
             }
@@ -44,26 +50,35 @@ public class UserController {
     public Boolean existsByEmail(@PathVariable String email) {
         return userService.existsByEmail(email);
     }
+
+
+
     @GetMapping("/{userId}/logements")
     public List<LogementEntity> getLogementsByUser(@PathVariable Long userId) {
-        UserEntity user = userService.findById(userId); // Supposons que vous ayez une méthode findById dans votre service
+        UserEntity user = userService.findById(userId);
         return userService.getLogementsByUser(user);
     }
 
     @GetMapping("/{userId}/reservations")
     public List<ReservationEntity> getReservationsByUser(@PathVariable Long userId) {
-        UserEntity user = userService.findById(userId); // Supposons que vous ayez une méthode findById dans votre service
+        UserEntity user = userService.findById(userId);
         return userService.getReservationsByUser(user);
     }
     @PostMapping("/save")
     public ResponseEntity<?> saveUser(@RequestBody UserEntity user) {
         try {
-            // Effectuez ici des validations de l'utilisateur, si nécessaire
+
             UserEntity savedUser = userService.saveUser(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+
+
+
+            UserDto userDto = userConverter.entityToDTO(savedUser);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(userDto);
         } catch (UserException ex) {
-            throw new UserException("une erreur s est produite lors de la création");
+            throw new UserException("une erreur s'est produite lors de la création");
         }
     }
+
 
 }

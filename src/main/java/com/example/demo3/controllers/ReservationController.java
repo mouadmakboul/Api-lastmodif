@@ -1,6 +1,8 @@
 package com.example.demo3.controllers;
 
+import com.example.demo3.Converter.ReservationConverter;
 import com.example.demo3.Entities.LogementEntity.LogementEntity;
+import com.example.demo3.Entities.ReservationEntity.ReservationDto;
 import com.example.demo3.Entities.ReservationEntity.ReservationEntity;
 import com.example.demo3.Entities.UserEntity.UserEntity;
 import com.example.demo3.Exceptions.ReservationException;
@@ -15,41 +17,62 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/reservations")
 public class ReservationController {
 
     private final ReservationService reservationService;
+    private final ReservationConverter reservationConverter; // Injectez ReservationConverter
 
     @Autowired
-    public ReservationController(ReservationService reservationService) {
+    public ReservationController(ReservationService reservationService, ReservationConverter reservationConverter) {
         this.reservationService = reservationService;
+        this.reservationConverter = reservationConverter;
     }
     @Autowired
     LogementService logementService;
 
     @GetMapping("/byLogement")
-    public List<ReservationEntity> getReservationsByLogement(@RequestParam long logementId) {
+    public ResponseEntity<?> getReservationsByLogement(@RequestParam long logementId) {
         try {
             Optional<LogementEntity> logement = logementService.findById(logementId); // Obtenez le logement à partir de votre service de logement
-            if (logement != null) {
-                return reservationService.findAllByLogement(logement);
+            if (logement.isPresent()) {
+                List<ReservationEntity> reservations = reservationService.findAllByLogement(Optional.of(logement.get()));
+
+                // Utilisez ReservationConverter pour convertir les entités en DTOs
+                List<ReservationDto> reservationDtos = reservations.stream()
+                        .map(reservationConverter::entityToDTO)
+                        .collect(Collectors.toList());
+
+                return ResponseEntity.ok(reservationDtos);
             } else {
                 throw new ReservationException("Logement not found with ID: " + logementId);
             }
         } catch (ReservationException ex) {
-            return (List<ReservationEntity>) ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
     }
 
+
     @GetMapping("/byUserAndLogement")
-    public List<ReservationEntity> getReservationsByUserAndLogement(
-            @RequestParam long userId,
-            @RequestParam long logementId) {
-        UserEntity user = new UserEntity(); // Vous devrez obtenir l'utilisateur à partir de votre service d'utilisateur
-        LogementEntity logement = new LogementEntity(); // Vous devrez obtenir le logement à partir de votre service de logement
-        return reservationService.findAllByUserAndLogement(user, logement);
+    public ResponseEntity<?> getReservationsByUserAndLogement(
+            @RequestBody UserEntity user,
+            @RequestBody LogementEntity logement) {
+
+        try {
+            List<ReservationEntity> reservations = reservationService.findAllByUserAndLogement(user, logement);
+
+
+            List<ReservationDto> reservationDtos = reservations.stream()
+                    .map(reservationConverter::entityToDTO)
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(reservationDtos);
+        } catch (ReservationException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
     }
     @PostMapping("/save")
     public ResponseEntity<?> saveReservation(@RequestBody ReservationEntity reservation) {
@@ -58,7 +81,11 @@ public class ReservationController {
                 throw new ReservationException("La date de réservation est invalide.");
             }
             ReservationEntity createdReservation = reservationService.save(reservation);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdReservation);
+
+
+            ReservationDto reservationDto = reservationConverter.entityToDTO(createdReservation);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(reservationDto);
         } catch (ReservationException ex) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
@@ -78,10 +105,16 @@ public class ReservationController {
     }
 
     @GetMapping("/byStartDateBetween")
-    public List<ReservationEntity> getReservationsByStartDateBetween(
+    public List<ReservationDto> getReservationsByStartDateBetween(
             @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
             @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate) {
-        return reservationService.findAllByStartDateBetween(startDate, endDate);
-    }
+        List<ReservationEntity> reservations = reservationService.findAllByStartDateBetween(startDate, endDate);
 
+
+        List<ReservationDto> reservationDtos = reservations.stream()
+                .map(reservationConverter::entityToDTO)
+                .collect(Collectors.toList());
+
+        return reservationDtos;
+    }
 }

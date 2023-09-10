@@ -5,14 +5,12 @@ import com.example.demo3.Entities.LogementEntity.LogementEntity;
 import com.example.demo3.Entities.UserEntity.UserEntity;
 import com.example.demo3.Exceptions.ImageException;
 import com.example.demo3.Service.ImageService;
-import com.example.demo3.Service.ImageServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,9 +62,10 @@ public class ImageController {
     }
 
     @GetMapping("/byUser")
-    public List<ImageEntity> getImagesByUser(@RequestParam long userId) {
-        UserEntity user = new UserEntity(); // Vous devrez obtenir l'utilisateur à partir de votre service d'utilisateur
-        return imageService.findAllByUser(user);
+    public Optional<ImageEntity> getImagesByUser(@RequestParam long userId) {
+        UserEntity user = new UserEntity();
+        Optional<ImageEntity> ie=imageService.findByUserId(userId);
+        return ie;
     }
     @GetMapping("/{id}")
     public Optional<ImageEntity> getImageById(@PathVariable Long id) {
@@ -92,7 +91,7 @@ public class ImageController {
     public ResponseEntity<?> uploadImage(
             @RequestParam("file") MultipartFile file,
             @RequestParam("userId") long userId) {
-        UserEntity user = new UserEntity(); // Vous devrez obtenir l'utilisateur à partir de votre service d'utilisateur
+        UserEntity user = new UserEntity();
 
         try {
             ImageEntity uploadedImage = imageService.uploadImage(file, user);

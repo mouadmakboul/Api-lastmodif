@@ -1,17 +1,17 @@
 package com.example.demo3.controllers;
 
+import com.example.demo3.Converter.AccountConverter;
+import com.example.demo3.Entities.AccountEntity.AccountDto;
 import com.example.demo3.Entities.AccountEntity.AccountEntity;
 import com.example.demo3.Entities.UserEntity.UserEntity;
 import com.example.demo3.Exceptions.AccountException;
 import com.example.demo3.Exceptions.UserException;
 import com.example.demo3.Service.AccountService;
-import com.example.demo3.Service.AccountServiceImpl;
 import com.example.demo3.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.security.auth.login.AccountNotFoundException;
 import java.util.List;
 
 
@@ -20,10 +20,12 @@ import java.util.List;
 public class AccountController {
 
     private final AccountService accountService;
+    private final AccountConverter accountConverter; // Injectez AccountConverter
 
     @Autowired
-    public AccountController(AccountService accountService) {
+    public AccountController(AccountService accountService, AccountConverter accountConverter) {
         this.accountService = accountService;
+        this.accountConverter = accountConverter;
     }
     @Autowired
     private UserService userService;
@@ -40,7 +42,10 @@ public class AccountController {
             throw new AccountException("Aucun compte n'a été trouvé pour cet utilisateur.");
         }
 
-        return ResponseEntity.ok(account);
+
+        AccountDto accountDto = accountConverter.entityToDTO(account);
+
+        return ResponseEntity.ok(accountDto);
     }
 
 
@@ -74,9 +79,21 @@ public class AccountController {
     }
 
     @PutMapping("/{id}")
-    public AccountEntity updateAccount(@PathVariable Long id, @RequestBody AccountEntity updatedAccount) {
-        return accountService.updateAccount(updatedAccount);
-    }
+    public AccountDto updateAccount(@PathVariable Long id, @RequestBody AccountEntity updatedAccount) {
+        // Mettez à jour l'entité AccountEntity et obtenez la version mise à jour
+        AccountEntity updatedEntity = accountService.updateAccount(updatedAccount);
 
+        // Convertissez l'entité mise à jour en DTO AccountDto en utilisant AccountConverter
+        AccountDto updatedDto = accountConverter.entityToDTO(updatedEntity);
+
+        return updatedDto; // Renvoyez le DTO mis à jour dans la réponse
+    }
 }
+
+
+
+
+
+
+
 

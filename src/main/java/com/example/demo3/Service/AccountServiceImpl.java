@@ -1,5 +1,7 @@
 package com.example.demo3.Service;
 
+import com.example.demo3.Converter.AccountConverter;
+import com.example.demo3.Entities.AccountEntity.AccountDto;
 import com.example.demo3.Entities.AccountEntity.AccountEntity;
 import com.example.demo3.Entities.UserEntity.UserEntity;
 import com.example.demo3.Exceptions.AccountException;
@@ -13,10 +15,12 @@ import java.util.List;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepo accountRepo;
+    private final AccountConverter accountConverter;
 
     @Autowired
-    public AccountServiceImpl(AccountRepo accountRepo) {
+    public AccountServiceImpl(AccountRepo accountRepo, AccountConverter accountConverter) {
         this.accountRepo = accountRepo;
+        this.accountConverter = accountConverter;
     }
 
     @Override
@@ -47,5 +51,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountEntity updateAccount(AccountEntity account) {
         return accountRepo.save(account);
+    }
+    public AccountDto entityToDTO(AccountEntity accountEntity) {
+        return accountConverter.entityToDTO(accountEntity);
     }
 }

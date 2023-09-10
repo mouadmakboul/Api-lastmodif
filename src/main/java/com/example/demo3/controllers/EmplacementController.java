@@ -1,9 +1,10 @@
 package com.example.demo3.controllers;
 
+import com.example.demo3.Converter.EmplacementConverter;
+import com.example.demo3.Entities.EmplacementEntity.EmplacementDto;
 import com.example.demo3.Entities.EmplacementEntity.EmplacementEntity;
 import com.example.demo3.Entities.LogementEntity.LogementEntity;
 import com.example.demo3.Service.EmplacementService;
-import com.example.demo3.Service.EmplacementServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,15 +15,20 @@ import java.util.List;
 public class EmplacementController {
 
     private final EmplacementService emplacementService;
+    private final EmplacementConverter emplacementConverter; // Injectez EmplacementConverter
 
     @Autowired
-    public EmplacementController(EmplacementService emplacementService) {
+    public EmplacementController(EmplacementService emplacementService, EmplacementConverter emplacementConverter) {
         this.emplacementService = emplacementService;
+        this.emplacementConverter = emplacementConverter;
     }
 
     @GetMapping("/byZonegeo")
-    public EmplacementEntity getEmplacementByZonegeo(@RequestParam String zonegeo) {
-        return emplacementService.findByZonegeo(zonegeo);
+    public EmplacementDto getEmplacementByZonegeo(@RequestParam String zonegeo) {
+        EmplacementEntity emplacementEntity = emplacementService.findByZonegeo(zonegeo);
+
+
+        return emplacementConverter.entityToDTO(emplacementEntity);
     }
 
     @GetMapping("/logementsByZonegeo")

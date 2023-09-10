@@ -1,11 +1,11 @@
 package com.example.demo3.controllers;
 
+import com.example.demo3.Converter.LogementConverter;
+import com.example.demo3.Entities.LogementEntity.LogementDto;
 import com.example.demo3.Entities.LogementEntity.LogementEntity;
 import com.example.demo3.Entities.UserEntity.UserEntity;
-import com.example.demo3.Exceptions.CategoryException;
 import com.example.demo3.Exceptions.LogementException;
 import com.example.demo3.Service.LogementService;
-import com.example.demo3.Service.LogementServiceImpl;
 import com.example.demo3.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,17 +23,23 @@ public class LogementController {
     private final LogementService logementService;
     @Autowired
     UserService ur;
+    private final LogementConverter logementConverter; // Injectez LogementConverter
 
     @Autowired
-    public LogementController(LogementService logementService) {
+    public LogementController(LogementService logementService, LogementConverter logementConverter) {
         this.logementService = logementService;
+        this.logementConverter = logementConverter;
     }
 
     @GetMapping("/byTitle")
     public ResponseEntity<?> getLogementByTitle(@RequestParam String title) {
         try {
             LogementEntity logement = logementService.findByTitle(title);
-            return ResponseEntity.ok(logement);
+
+            // Utilisez LogementConverter pour convertir l'entité en DTO
+            LogementDto logementDto = logementConverter.entityToDTO(logement);
+
+            return ResponseEntity.ok(logementDto);
         } catch (LogementException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         }
@@ -42,9 +48,14 @@ public class LogementController {
     @GetMapping("/byId")
     public ResponseEntity<?> getLogementById(@RequestParam Long id) {
         try {
-            Optional<LogementEntity> logement = logementService.findById(id);
-            if (logement.isPresent()) {
-                return ResponseEntity.ok(logement.get());
+            Optional<LogementEntity> logementOptional = logementService.findById(id);
+            if (logementOptional.isPresent()) {
+                LogementEntity logement = logementOptional.get();
+
+                // Utilisez LogementConverter pour convertir l'entité en DTO
+                LogementDto logementDto = logementConverter.entityToDTO(logement);
+
+                return ResponseEntity.ok(logementDto);
             } else {
                 throw new LogementException("Logement not found with ID: " + id);
             }
@@ -53,9 +64,10 @@ public class LogementController {
         }
     }
 
+
     @GetMapping("/byUser")
     public ResponseEntity<?> getLogementsByUser(@RequestParam long userId) {
-        UserEntity user = ur.findById(userId); // Vous devrez obtenir l'utilisateur à partir de votre service d'utilisateur
+        UserEntity user = ur.findById(userId);
         try {
             List<LogementEntity> logements = logementService.findAllByUser(user);
             return ResponseEntity.ok(logements);
